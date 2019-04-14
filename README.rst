@@ -19,8 +19,7 @@ Features
   - This provides a simple error free client interface
 - Native `OpenAPI <https://swagger.io/docs/specification/about/>`_ support
 - Auto generated `OpenAPI <https://swagger.io/docs/specification/about/>`_ documentation and JSON schema for building client interfaces.
-- Fast server using next generation python 3 libraries `FastApi <https://github.com/tiangolo/fastapi>`_,
-`uvicorn <https://www.uvicorn.org/>`_ and `Starlette <https://github.com/encode/starlette>`_
+- Fast server using next generation python 3 libraries `FastApi <https://github.com/tiangolo/fastapi>`_, `uvicorn <https://www.uvicorn.org/>`_ and `Starlette <https://github.com/encode/starlette>`_
 - Docker support for ultimate portability
 - Lightweight, can run on Raspberry Pi
 - Uses pydantic `Secret Types <https://pydantic-docs.helpmanual.io/#secret-types>`_ module to avoid leakage of private content
@@ -306,8 +305,8 @@ Sign a transfer message object and return the hash
 
     {
         "msg": {
-            symbol="BNB",
-            amount=1,
+            "symbol": "BNB",
+            "amount": 1,
             to_address="<to address>"
         },
         "wallet_name": "wallet_1"
@@ -416,6 +415,9 @@ Same as /api/unfreeze/sign
 
 Is the response from the Binance Chain exchange
 
+Wallet Interaction
+------------------
+
 **/api/wallet/resync**
 
 Resynchronise the wallet on the signing service. This can happen if the sequence gets out of order.
@@ -436,9 +438,8 @@ Requires permission - resync
 
     {}
 
-**/api/openapi.json**
-
-Retrieve the OpenAPI JSON Schema for this service.
+Docs & OpenAPI
+--------------
 
 **/docs**
 
@@ -446,12 +447,17 @@ View the OpenAPI docs for this service and interact with it.
 
 **/redoc**
 
+View the docs in Redoc format
+
+**/api/openapi.json**
+
+Retrieve the OpenAPI JSON Schema for this service.
 
 
 Using python-binance-chain
 --------------------------
 
-`python-binance-chain <https://github.com/sammchardy/python-binance-chain/>` has been updated to include this
+`python-binance-chain <https://github.com/sammchardy/python-binance-chain/>`_ has been updated to include this
 signing service interface as an option to process messages
 
 Initialise the client to interact with your signing service
@@ -459,11 +465,11 @@ Initialise the client to interact with your signing service
 .. code:: python
 
     from binance_chain.signing.http import HttpSigningClient
+    from binance_chain.messages import NewOrderMsg
 
-    # create multiple instances if m
     signing_client = HttpSigningClient(url="http://localhost:8000", username="username", password="password")
 
-    # get hex data for a message
+    # create the message object
     new_order_msg = NewOrderMsg(
         symbol='ANN-457_BNB',
         order_type=OrderType.LIMIT,
@@ -472,8 +478,9 @@ Initialise the client to interact with your signing service
         quantity=10,
         time_in_force=TimeInForce.GOOD_TILL_EXPIRE
     )
+
+    # get hex data for a message
     new_order_hex = signing_client.sign_order(new_order_msg, wallet_name='wallet_1')
 
     # broadcast a message directly
     new_order_res = signing_client.broadcast_order(new_order_msg, wallet_name='wallet_1')
-
