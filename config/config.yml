@@ -1,0 +1,31 @@
+wallets:
+  - private_key: 3dcc267e1f7edca86e03f0963b2d0b7804552d3014caddcfc435a4d7bc240cf5
+    env_name: TESTNET
+    ip_whitelist:
+      - '127.0.0.1'
+    name: 'wallet_1'
+    permissions:
+      - trade
+      - transfer
+  - private_key: 3dcc267e1f7edca86e03f0963b2d0b7804552d3014caddcfc435a4d7bc240cf5
+    env_name: TESTNET
+    name: 'wallet_2'
+    permissions:
+      - trade
+      - transfer
+
+users:
+  - username: sam
+    # default password `mypass`
+    password_hash: $2b$12$s7Vim3MM/d9as/Uh3xXcLOOcJ5kxW7D/HCZ8wcq/p8SH9BRuVP4au
+    wallet_permissions:
+      - wallet_name: wallet_1
+        permissions:
+          - trade
+          - transfer
+      - wallet_name: wallet_2
+        permissions:
+          - transfer
+
+access_token_expiry_minutes: 10080
+secret_key: change_this

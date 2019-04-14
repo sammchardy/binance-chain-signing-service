@@ -1,0 +1,6 @@
+python-binance-chain
+Click==7.0.0
+bcrypt
+pyjwt
+passlib
+pydantic==0.23
