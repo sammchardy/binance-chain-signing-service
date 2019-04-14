@@ -28,6 +28,8 @@ including private keys, password hashes and auth secret keys
 - Some IP whitelisting has been implemented
     - would recommend external security control if hosting on cloud services or through a proxy like Traefik or Nginx
 
+Read the `Changelog <changelog.rst>`_
+
 Configuration
 -------------
 
