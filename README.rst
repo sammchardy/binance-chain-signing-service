@@ -307,7 +307,7 @@ Sign a transfer message object and return the hash
         "msg": {
             "symbol": "BNB",
             "amount": 1,
-            to_address="<to address>"
+            "to_address": "<to address>"
         },
         "wallet_name": "wallet_1"
     }
@@ -346,8 +346,8 @@ Sign a freeze message object and return the hash
 
     {
         "msg": {
-            symbol="BNB",
-            amount=1,
+            "symbol": "BNB",
+            "amount": 1,
         },
         "wallet_name": "wallet_1"
     }
@@ -387,8 +387,8 @@ Requires permission - freeze
 
     {
         "msg": {
-            symbol="BNB",
-            amount=1,
+            "symbol": "BNB",
+            "amount": 1,
         },
         "wallet_name": "wallet_1"
     }
