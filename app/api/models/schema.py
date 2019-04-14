@@ -49,3 +49,7 @@ class FreezeSchema(BaseModel):
 class SignFreezeSchema(BaseModel):
     msg: TransferSchema
     wallet_name: str
+
+
+class WalletSchema(BaseModel):
+    wallet_name: str

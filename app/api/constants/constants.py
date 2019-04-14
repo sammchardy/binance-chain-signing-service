@@ -5,3 +5,4 @@ class WalletPermission(str, Enum):
     TRADE = 'trade'
     TRANSFER = 'transfer'
     FREEZE = 'freeze'
+    RESYNC = 'resync'

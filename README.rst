@@ -40,18 +40,20 @@ The configuration has 3 sections
 
 .. code:: yaml
 
-    # amount of minutes access tokens are valid
+    # amount of minutes access tokens are valid, set to a large number if a long expiry is needed
     access_token_expiry_minutes: 10080
-    # secret key to encode tokens, generate with bcrypt tool
-    secret_key: change_this
+    # secret key to encode tokens, generate with a bcrypt tool
+    secret_key: <bcrypt_hash>
 
 **Wallets**
 
 .. code:: yaml
 
     wallets:
+      # the private key for this wallet
       - private_key: <private_key>
-        name: wallet_1  # name of the wallet used in requests
+        # name of the wallet, this is used in requests to the signing service
+        name: wallet_1
         # specify the environment to use for this wallet
         env_name: TESTNET  # or PROD
         ip_whitelist:  # optional section
@@ -83,6 +85,17 @@ The configuration has 3 sections
               - transfer
 
 If the user has trade permission but the wallet doesn't, then the wallet permission denies trade access.
+
+**Permissions**
+
+trade - allow order create and canceld
+transfer - allow the transfer of funds from one account to another
+freeze - allow freezing and unfreezing tokens
+resync - allow resynchronising sequence info for the wallet
+
+Wallets can have any combination of permissions to restrict access per wallet and per user.
+
+Combined with multiple users you have the most flexibility in how accounts are accessed and used.
 
 **Bcrypt Generation**
 
@@ -199,6 +212,8 @@ All other endpoints require JWT token for authentication. Add this as a request 
 
 Sign a new order message object and return the hash
 
+Requires permission - trade
+
 *Request*
 
 .. code:: json
@@ -227,19 +242,209 @@ Sign a new order message object and return the hash
 
 Sign a new order message object and return the exchanges response
 
+Requires permission - trade
+
+*Request*
+
+Same as /api/order/sign
+
+*Response*
+
+Is the response from the Binance Chain exchange
+
+
+**/api/cancel_order/sign**
+
+Sign a cancel order message object and return the hash
+
+Requires permission - trade
 
 *Request*
 
 .. code:: json
 
     {
-        "username": "sambot",
-        "password": "don'tforgetthis"
+        "msg": {
+            "order_id": "<order_id>",
+            "symbol": "ANN-457_BNB"
+        },
+        "wallet_name": "wallet_1"
     }
 
 *Response*
 
+.. code:: json
+
+    {
+        "signed_msg": "de01f0625dee0a6..."
+    }
+
+**/api/order/broadcast**
+
+Requires permission - trade
+
+Sign a cancel order message object and return the exchanges response
+
+*Request*
+
+Same as /api/cancel_order/sign
+
+*Response*
+
 Is the response from the Binance Chain exchange
+
+
+**/api/transfer/sign**
+
+Requires permission - transfer
+
+Sign a transfer message object and return the hash
+
+*Request*
+
+.. code:: json
+
+    {
+        "msg": {
+            symbol="BNB",
+            amount=1,
+            to_address="<to address>"
+        },
+        "wallet_name": "wallet_1"
+    }
+
+*Response*
+
+.. code:: json
+
+    {
+        "signed_msg": "de01f0625dee0a6..."
+    }
+
+**/api/transfer/broadcast**
+
+Requires permission - transfer
+Sign a transfer message object and return the exchanges response
+
+*Request*
+
+Same as /api/transfer/sign
+
+*Response*
+
+Is the response from the Binance Chain exchange
+
+
+**/api/freeze/sign**
+
+Requires permission - freeze
+
+Sign a freeze message object and return the hash
+
+*Request*
+
+.. code:: json
+
+    {
+        "msg": {
+            symbol="BNB",
+            amount=1,
+        },
+        "wallet_name": "wallet_1"
+    }
+
+*Response*
+
+.. code:: json
+
+    {
+        "signed_msg": "de01f0625dee0a6..."
+    }
+
+**/api/freeze/broadcast**
+
+Sign a transfer message object and return the exchanges response
+
+Requires permission - freeze
+
+*Request*
+
+Same as /api/freeze/sign
+
+*Response*
+
+Is the response from the Binance Chain exchange
+
+
+**/api/unfreeze/sign**
+
+Sign an unfreeze message object and return the hash
+
+Requires permission - freeze
+
+*Request*
+
+.. code:: json
+
+    {
+        "msg": {
+            symbol="BNB",
+            amount=1,
+        },
+        "wallet_name": "wallet_1"
+    }
+
+*Response*
+
+.. code:: json
+
+    {
+        "signed_msg": "de01f0625dee0a6..."
+    }
+
+**/api/unfreeze/broadcast**
+
+Sign an unfreeze message object and return the exchanges response
+
+Requires permission - freeze
+
+*Request*
+
+Same as /api/unfreeze/sign
+
+*Response*
+
+Is the response from the Binance Chain exchange
+
+**/api/wallet/resync**
+
+Resynchronise the wallet on the signing service. This can happen if the sequence gets out of order.
+
+Requires permission - resync
+
+*Request*
+
+.. code:: json
+
+    {
+        "wallet_name": "wallet_1"
+    }
+
+*Response*
+
+.. code:: json
+
+    {}
+
+**/api/openapi.json**
+
+Retrieve the OpenAPI JSON Schema for this service.
+
+**/docs**
+
+View the OpenAPI docs for this service and interact with it.
+
+**/redoc**
 
 
 
@@ -271,3 +476,4 @@ Initialise the client to interact with your signing service
 
     # broadcast a message directly
     new_order_res = signing_client.broadcast_order(new_order_msg, wallet_name='wallet_1')
+

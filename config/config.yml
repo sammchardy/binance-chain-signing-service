@@ -7,12 +7,12 @@ wallets:
     permissions:
       - trade
       - transfer
+      - freeze
   - private_key: 3dcc267e1f7edca86e03f0963b2d0b7804552d3014caddcfc435a4d7bc240cf5
     env_name: TESTNET
     name: 'wallet_2'
     permissions:
       - trade
-      - transfer
 
 users:
   - username: sam

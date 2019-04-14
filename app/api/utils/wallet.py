@@ -18,8 +18,6 @@ async def get_wallet(request: Request) -> WalletConfig:
     :param request:
     :return:
     """
-    logging.info("getting wallet from request")
-
     config = ServiceConfig()
 
     body_json = await request.json()
@@ -32,7 +30,5 @@ async def get_wallet(request: Request) -> WalletConfig:
     # if not wallet.ip_authorised(request.client.host):
     #     print(f'wallet not authorised from {request.client.host}')
     #     raise HTTPException(status_code=403, detail=f"Access denied {request.client.host}")
-
-    logging.info(f'wallet: {wallet}')
 
     return wallet
