@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
+from fastapi import APIRouter, Depends, BackgroundTasks, Body
 
 from binance_chain.messages import CancelOrderMsg
 
@@ -6,29 +6,31 @@ from config.config import WalletConfig, UserSettings
 from api.models.schema import SignCancelOrderSchema
 from api.constants.constants import WalletPermission
 from api.utils.wallet import get_wallet, increment_wallet_sequence
-from api.security.auth import get_current_user, user_has_wallet_permission
+from api.security.auth import get_current_user, assert_user_has_wallet_permission, assert_wallet_has_permission
 
 router = APIRouter()
 
 
 @router.post("/order/cancel/sign/")
 async def sign_cancel_order(
-    cancel_order: SignCancelOrderSchema,
+    cancel_order: SignCancelOrderSchema = Body(
+        ...,
+        example={
+            "msg": {
+                "order_id": "<order_id>",
+                "symbol": "ANN-457_BNB"
+            },
+            "wallet_name": "wallet_1"
+        }
+    ),
     req_wallet: WalletConfig = Depends(get_wallet),
     current_user: UserSettings = Depends(get_current_user)
 ):
     """Sign a cancel order message, returning the hex data
 
     """
-    if not req_wallet.has_permission(WalletPermission.TRADE):
-        raise HTTPException(status_code=403, detail=f"No permission {WalletPermission.TRADE}")
-
-    # check user has permission for this wallet
-    if not user_has_wallet_permission(current_user, cancel_order.wallet_name, WalletPermission.TRADE):
-        raise HTTPException(
-            status_code=403,
-            detail=f"User has no permission {WalletPermission.TRADE} on wallet {cancel_order.wallet_name}"
-        )
+    assert_wallet_has_permission(req_wallet, WalletPermission.TRADE)
+    assert_user_has_wallet_permission(current_user, cancel_order.wallet_name, WalletPermission.TRADE)
 
     # create the message
     msg = CancelOrderMsg(
@@ -41,8 +43,17 @@ async def sign_cancel_order(
 
 @router.post("/order/cancel/broadcast")
 async def broadcast_cancel_order(
-    cancel_order: SignCancelOrderSchema,
     background_tasks: BackgroundTasks,
+    cancel_order: SignCancelOrderSchema = Body(
+        ...,
+        example={
+            "msg": {
+                "order_id": "<order_id>",
+                "symbol": "ANN-457_BNB"
+            },
+            "wallet_name": "wallet_1"
+        }
+    ),
     req_wallet: WalletConfig = Depends(get_wallet),
     current_user: UserSettings = Depends(get_current_user),
     sync=True
@@ -50,15 +61,8 @@ async def broadcast_cancel_order(
     """Sign and broadcast a cancel order message to the exchange
 
     """
-    if not req_wallet.has_permission(WalletPermission.TRADE):
-        raise HTTPException(status_code=403, detail=f"No permission {WalletPermission.TRADE}")
-
-    # check user has permission for this wallet
-    if not user_has_wallet_permission(current_user, cancel_order.wallet_name, WalletPermission.TRADE):
-        raise HTTPException(
-            status_code=403,
-            detail=f"User has no permission {WalletPermission.TRADE} on wallet {cancel_order.wallet_name}"
-        )
+    assert_wallet_has_permission(req_wallet, WalletPermission.TRADE)
+    assert_user_has_wallet_permission(current_user, cancel_order.wallet_name, WalletPermission.TRADE)
 
     # create the message
     msg = CancelOrderMsg(

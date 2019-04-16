@@ -18,6 +18,30 @@ class UserSettings(BaseSettings):
     password_hash: SecretStr
     wallet_permissions: List[UserWalletSettings]
 
+    def get_wallet_info(self, wallet_name: Optional[str] = None):
+        config = ServiceConfig()
+        wallets = []
+        for w_name, wallet in config.wallets.items():
+            if wallet_name and w_name != wallet_name:
+                continue
+            wc: Dict = wallet.asdict()
+
+            # work out permissions
+            wc['permissions'] = list(set(wc['permissions']).intersection(set(self.get_wallet_permissions(w_name))))
+            if len(wc['permissions']):
+                wallets.append(wc)
+        return wallets
+
+    def get_wallet_permissions(self, wallet_name) -> List[WalletPermission]:
+        for wallet in self.wallet_permissions:
+            if wallet.wallet_name != wallet_name:
+                continue
+            return wallet.permissions
+        return []
+
+    def has_wallet_permission(self, wallet_name: str, permission: WalletPermission) -> bool:
+        return permission in self.get_wallet_permissions(wallet_name)
+
 
 class WalletSettings(BaseSettings):
     private_key: SecretStr
@@ -57,6 +81,15 @@ class WalletConfig:
 
     def has_permission(self, permission: WalletPermission):
         return permission in self.permissions
+
+    def asdict(self) -> Dict:
+        return {
+            'name': self.name,
+            'permissions': self.permissions,
+            'env': self._settings.env_name,
+            'address': self._wallet.address,
+            'public_key': self._wallet.public_key_hex
+        }
 
     @property
     def name(self):
@@ -103,22 +136,16 @@ class ServiceConfig:
 
             self._wallets: Dict[str, WalletConfig] = {w.name: WalletConfig(w) for w in self._settings.wallets}
 
-            print(f"created wallets: {self._wallets}")
-
         async def get_wallet(self, wallet_name: Optional[str] = None, initialise=True) -> Optional[WalletConfig]:
             if not wallet_name:
-                print('no wallet name')
                 return None
 
             wallet = self._wallets.get(wallet_name, None)
-            print(f'got wallet: {wallet}')
             if not wallet:
                 return None
 
-            print(f'got wallet.wallet: {wallet.wallet}')
             if initialise:
                 wallet.wallet.initialise_wallet()
-            print('returning wallet')
             return wallet
 
         @property

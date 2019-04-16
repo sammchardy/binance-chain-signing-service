@@ -13,7 +13,7 @@ logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-app = FastAPI(openapi_url="/api/openapi.json")
+app = FastAPI(title="Binance Chain Signing Service", openapi_url="/api/openapi.json")
 config: ServiceConfig()
 
 
