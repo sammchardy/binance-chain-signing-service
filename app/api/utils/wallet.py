@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import HTTPException
 from starlette.requests import Request
 

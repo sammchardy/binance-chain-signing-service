@@ -7,6 +7,8 @@ Features
 
 - Signing methods for Order, Cancel Order, Transfer, Freeze and Unfreeze tokens
 - Sign and broadcast methods for above messages
+- Resync a wallet to the chain
+- Fetch wallet permissions and information such as address and environment
 - Validated config using `pydantic <https://pydantic-docs.helpmanual.io/>`_
 - `JWT <https://jwt.io/>`_ authentication method
 - Multiple wallet support
@@ -18,6 +20,7 @@ Features
 - Supported by `python-binance-chain <https://github.com/sammchardy/python-binance-chain/>`_ python client library
   - This provides a simple error free client interface
 - Native `OpenAPI <https://swagger.io/docs/specification/about/>`_ support
+- Import OpenAPI schema into `Postman <https://www.getpostman.com/>`_ directly
 - Auto generated `OpenAPI <https://swagger.io/docs/specification/about/>`_ documentation and JSON schema for building client interfaces.
 - Fast server using next generation python 3 libraries `FastApi <https://github.com/tiangolo/fastapi>`_, `uvicorn <https://www.uvicorn.org/>`_ and `Starlette <https://github.com/encode/starlette>`_
 - Docker support for ultimate portability
@@ -209,7 +212,7 @@ All other endpoints require JWT token for authentication. Add this as a request 
     Authorization: Bearer <access_token>
 
 
-**/api/order/sign**
+**POST /api/order/sign**
 
 Sign a new order message object and return the hash
 
@@ -239,7 +242,7 @@ Requires permission - trade
         "signed_msg": "de01f0625dee0a6..."
     }
 
-**/api/order/broadcast**
+**POST /api/order/broadcast**
 
 Sign a new order message object and return the exchanges response
 
@@ -254,7 +257,7 @@ Same as /api/order/sign
 Is the response from the Binance Chain exchange
 
 
-**/api/cancel_order/sign**
+**POST /api/cancel_order/sign**
 
 Sign a cancel order message object and return the hash
 
@@ -280,7 +283,7 @@ Requires permission - trade
         "signed_msg": "de01f0625dee0a6..."
     }
 
-**/api/order/broadcast**
+**POST /api/order/broadcast**
 
 Requires permission - trade
 
@@ -295,7 +298,7 @@ Same as /api/cancel_order/sign
 Is the response from the Binance Chain exchange
 
 
-**/api/transfer/sign**
+**POST /api/transfer/sign**
 
 Requires permission - transfer
 
@@ -322,7 +325,7 @@ Sign a transfer message object and return the hash
         "signed_msg": "de01f0625dee0a6..."
     }
 
-**/api/transfer/broadcast**
+**POST /api/transfer/broadcast**
 
 Requires permission - transfer
 Sign a transfer message object and return the exchanges response
@@ -336,7 +339,7 @@ Same as /api/transfer/sign
 Is the response from the Binance Chain exchange
 
 
-**/api/freeze/sign**
+**POST /api/freeze/sign**
 
 Requires permission - freeze
 
@@ -362,7 +365,7 @@ Sign a freeze message object and return the hash
         "signed_msg": "de01f0625dee0a6..."
     }
 
-**/api/freeze/broadcast**
+**POST /api/freeze/broadcast**
 
 Sign a transfer message object and return the exchanges response
 
@@ -377,7 +380,7 @@ Same as /api/freeze/sign
 Is the response from the Binance Chain exchange
 
 
-**/api/unfreeze/sign**
+**POST /api/unfreeze/sign**
 
 Sign an unfreeze message object and return the hash
 
@@ -403,7 +406,7 @@ Requires permission - freeze
         "signed_msg": "de01f0625dee0a6..."
     }
 
-**/api/unfreeze/broadcast**
+**POST /api/unfreeze/broadcast**
 
 Sign an unfreeze message object and return the exchanges response
 
@@ -420,7 +423,7 @@ Is the response from the Binance Chain exchange
 Wallet Interaction
 ------------------
 
-**/api/wallet/resync**
+**POST /api/wallet/resync**
 
 Resynchronise the wallet on the signing service. This can happen if the sequence gets out of order.
 
@@ -440,6 +443,59 @@ Requires permission - resync
 
     {}
 
+**GET /api/wallet**
+
+Fetch all wallet info the currently authorised user has access to
+
+Requires permission - none
+
+*Response*
+
+.. code:: json
+
+    [
+        {
+            "name": "wallet_1",
+                "permissions": [
+                "transfer",
+                "trade"
+            ],
+            "env": "TESTNET",
+            "address": "tbnb10a6kkxlf823w9lwr6l9hzw4uyphcw7qzrud5rr",
+            "public_key": "02cce2ee4e37dc8c65d6445c966faf31ebfe578a90695138947ee7cab8ae9a2c08"
+        },
+        {
+            "name": "wallet_2",
+            "permissions": [
+                "transfer"
+            ],
+            "env": "TESTNET",
+            "address": "tbnb10a6kkxlf823w9lwr6l9hzw4uyphcw7qzrud5rr",
+            "public_key": "02cce2ee4e37dc8c65d6445c966faf31ebfe578a90695138947ee7cab8ae9a2c08"
+        }
+    ]
+
+**GET /api/wallet/{wallet_name}**
+
+Fetch wallet info for the named wallet and the currently authorised user
+
+Requires permission - none
+
+*Response*
+
+.. code:: json
+
+    {
+        "name": "wallet_1",
+            "permissions": [
+            "transfer",
+            "trade"
+        ],
+        "env": "TESTNET",
+        "address": "tbnb10a6kkxlf823w9lwr6l9hzw4uyphcw7qzrud5rr",
+        "public_key": "02cce2ee4e37dc8c65d6445c966faf31ebfe578a90695138947ee7cab8ae9a2c08"
+    }
+
 Docs & OpenAPI
 --------------
 
@@ -454,6 +510,8 @@ View the docs in Redoc format
 **/api/openapi.json**
 
 Retrieve the OpenAPI JSON Schema for this service.
+
+You can also import this directly into `Postman <https://www.getpostman.com/>`_
 
 
 Using python-binance-chain

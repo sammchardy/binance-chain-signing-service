@@ -12,7 +12,8 @@ wallets:
     env_name: TESTNET
     name: 'wallet_2'
     permissions:
-      - trade
+      - transfer
+      - freeze
 
 users:
   - username: sam
