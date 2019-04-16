@@ -30,7 +30,7 @@ async def wallet_resync(
 
 
 @router.get("/wallet")
-async def wallet_info(
+async def all_wallet_details(
     current_user: UserSettings = Depends(get_current_user)
 ):
     """Get detail info for all wallets the authenticated user can access"""
@@ -41,7 +41,7 @@ async def wallet_info(
 
 
 @router.get("/wallet/{wallet_name}")
-async def wallet_info(
+async def wallet_detail(
     wallet_name: str = Path(..., title="Name of wallet"),
     current_user: UserSettings = Depends(get_current_user)
 ):

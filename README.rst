@@ -24,6 +24,7 @@ Features
 - Auto generated `OpenAPI <https://swagger.io/docs/specification/about/>`_ documentation and JSON schema for building client interfaces.
 - Fast server using next generation python 3 libraries `FastApi <https://github.com/tiangolo/fastapi>`_, `uvicorn <https://www.uvicorn.org/>`_ and `Starlette <https://github.com/encode/starlette>`_
 - Docker support for ultimate portability
+- Terraform example running on AWS Fargate behind ALB
 - Lightweight, can run on Raspberry Pi
 - Uses pydantic `Secret Types <https://pydantic-docs.helpmanual.io/#secret-types>`_ module to avoid leakage of private content
 including private keys, password hashes and auth secret keys
@@ -32,6 +33,21 @@ including private keys, password hashes and auth secret keys
     - would recommend external security control if hosting on cloud services or through a proxy like Traefik or Nginx
 
 Read the `Changelog <changelog.rst>`_
+
+Test Service
+------------
+
+View the OpenAPI docs here `binance-signing-service.xyz <https://binance-signing-service.xyz/docs>`_
+
+Import the OpenAPI schema to Postman from here `binance-signing-service.xyz <https://binance-signing-service.xyz/api/openapi.json>`_
+
+Use https://binance-signing-service.xyz as the endpoint to communicate if you're using the `python-binance-chain <https://github.com/sammchardy/python-binance-chain/>`_ python client library.
+
+Login credentials are
+
+ - username: sam
+ - password: mypass
+
 
 Configuration
 -------------
@@ -174,6 +190,54 @@ I would recommend using the `container with Traefik <https://github.com/tiangolo
 to include Let's Encrypt support to serve content over HTTPS.
 
 By running in an environment like AWS using ECS, one could point API Gateway to the instance and define IP whitelisting in this way.
+
+Terraform
+---------
+
+A Terraform config for running the container in AWS Fargate with an ALB can be found in the `terraform` directory.
+
+After pushing your build docker container to ECR you are nearly ready to go.
+
+To do that
+
+- create an ECR repository in AWS
+
+- tag your local image with the repository name
+
+.. code:: bash
+
+    docker tag bdex-sign <account_id>.dkr.ecr.us-east-1.amazonaws.com/bdex-sign
+
+- push the image to the repository
+
+.. code:: bash
+
+    docker push <account_id>.dkr.ecr.us-east-1.amazonaws.com/bdex-sign
+
+
+Update `terraform/variables.tf` and fill in your aws_profile, container location and ecs_task_execution_role (it will
+look something like arn:aws:iam::<account_id>:role/ecsTaskExecutionRole.
+
+Now initialise terraform
+
+.. code:: bash
+
+    terraform init terraform/
+
+Then apply the terraform plan
+
+.. code:: bash
+
+    terraform apply terraform/
+
+This will output the URL to access your signing service.
+
+To delete at any time
+
+.. code:: bash
+
+    terraform destroy terraform/
+
 
 Authentication
 --------------
