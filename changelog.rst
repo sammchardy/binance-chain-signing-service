@@ -1,6 +1,15 @@
 Changelog
 =========
 
+v0.0.2 - 2010-04-16
+^^^^^^^^^^^^^^^^^^^
+
+**Added**
+
+- Sample server at `binance-signing-service.xyz <https://binance-signing-service.xyz/docs>`_
+- Terraform example running on AWS Fargate behind ALB
+
+
 v0.0.1 - 2010-04-14
 ^^^^^^^^^^^^^^^^^^^
 
