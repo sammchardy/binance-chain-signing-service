@@ -7,6 +7,7 @@ from api.models.schema import SignTransferSchema
 from api.constants.constants import WalletPermission
 from api.utils.wallet import get_wallet, increment_wallet_sequence
 from api.security.auth import get_current_user, assert_user_has_wallet_permission, assert_wallet_has_permission
+from api.utils.logging import log_broadcast_transaction, log_sign_transaction
 
 router = APIRouter()
 
@@ -38,6 +39,8 @@ async def sign_transfer(
         wallet=req_wallet.wallet,
         **transfer.msg.dict()
     )
+
+    log_sign_transaction(current_user, req_wallet, msg)
 
     return {'signed_msg': msg.to_hex_data()}
 
@@ -71,6 +74,8 @@ async def broadcast_transfer(
         wallet=req_wallet.wallet,
         **transfer.msg.dict()
     )
+
+    log_broadcast_transaction(current_user, req_wallet, msg)
 
     background_tasks.add_task(increment_wallet_sequence, req_wallet)
     return await req_wallet.broadcast_msg(msg.to_hex_data(), sync=sync)
