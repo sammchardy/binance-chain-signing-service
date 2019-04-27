@@ -1,5 +1,5 @@
 ===============================================
-Welcome to Binance Chain Signing Service v0.0.2
+Welcome to Binance Chain Signing Service v0.0.3
 ===============================================
 
 Features
@@ -12,6 +12,7 @@ Features
 - Validated config using `pydantic <https://pydantic-docs.helpmanual.io/>`_
 - `JWT <https://jwt.io/>`_ authentication method
 - Multiple wallet support
+- Create wallets with mnemonic or private_key
 - Multiple user support
 - Per wallet and per user permissions
 - Users may have access to multiple wallets
