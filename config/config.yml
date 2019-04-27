@@ -8,7 +8,7 @@ wallets:
       - trade
       - transfer
       - freeze
-  - private_key: 3dcc267e1f7edca86e03f0963b2d0b7804552d3014caddcfc435a4d7bc240cf5
+  - mnemonic: 'smart depend recycle toward already roof country frost field dose joke zero start notable vote eight symptom suffer camp milk dream swear wrap accident'
     env_name: TESTNET
     name: 'wallet_2'
     permissions:

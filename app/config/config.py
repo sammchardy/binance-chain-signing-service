@@ -1,5 +1,6 @@
+import logging
 from typing import Dict, List, Optional
-from pydantic import BaseSettings, SecretStr
+from pydantic import BaseSettings, SecretStr, validator
 
 from binance_chain.environment import BinanceEnvironment
 from binance_chain.wallet import Wallet
@@ -44,12 +45,22 @@ class UserSettings(BaseSettings):
 
 
 class WalletSettings(BaseSettings):
-    private_key: SecretStr
+    private_key: Optional[SecretStr] = None
+    mnemonic: Optional[SecretStr] = None
     name: str
     env_name: str = 'PROD'
     env: Optional[BinanceEnvironment] = None
     ip_whitelist: Optional[List[str]]
     permissions: List[WalletPermission]
+
+    @validator('mnemonic', always=True)
+    def mnemonic_and_private_key_dependency(cls, value, values):  # noqa
+        """Validate that either mnemonic or private_key are set"""
+        if value is None and values.get('private_key') is None:
+            raise ValueError('private_key or mnemonic must be set')
+        elif value and values.get('road_number_1') is not None:
+            raise ValueError('private_key or mnemonic can not be set at the same time')
+        return value
 
 
 class Settings(BaseSettings):
@@ -68,9 +79,18 @@ class WalletConfig:
         if wallet_settings.env_name == 'TESTNET':
             w_env = BinanceEnvironment.get_testnet_env()
 
-        self._wallet = Wallet(private_key=wallet_settings.private_key.get_secret_value(), env=w_env)
+        if wallet_settings.private_key:
+            log_init_type = 'private_key'
+            self._wallet = Wallet(private_key=wallet_settings.private_key.get_secret_value(), env=w_env)
+        elif wallet_settings.mnemonic:
+            log_init_type = 'mnemonic'
+            self._wallet = Wallet.create_wallet_from_mnemonic(wallet_settings.mnemonic.get_secret_value(), env=w_env)
+        else:
+            raise Exception(f"Unable to initialise wallet {wallet_settings.name} no private_key or mnemonic set")
 
         self._http_client: Optional[AsyncHttpApiClient] = None
+
+        logging.info(f"Initialised wallet {wallet_settings.name} with {log_init_type}")
 
     def ip_authorised(self, ip_address: str):
         if not self.ip_whitelist:

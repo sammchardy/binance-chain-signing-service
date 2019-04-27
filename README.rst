@@ -82,6 +82,15 @@ The configuration has 3 sections
         permissions:  # limit of permissions that users may be able to perform on this
           - trade
           - transfer
+
+      # initialise wallet with mnemonic
+      - mnemonic: '<mnemonic word string>'
+        env_name: TESTNET
+        name: wallet_2
+        permissions:
+          - transfer
+          - freeze
+
     # add other wallets as needed
 
 **Users**
