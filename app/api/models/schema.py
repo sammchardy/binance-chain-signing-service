@@ -37,6 +37,7 @@ class TransferSchema(BaseModel):
     to_address: str = Schema(..., title="Address to transfer tokens to")
     amount: Decimal = Schema(..., title="Amount to transfer", gt=0)
     symbol: str = Schema(..., title="Symbol to transfer")
+    memo: str = Schema(..., title="Memo to include in transfer")
 
 
 class SignTransferSchema(BaseModel):
