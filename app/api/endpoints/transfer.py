@@ -22,7 +22,8 @@ async def sign_transfer(
                 "amount": 1,
                 "to_address": "<to address>"
             },
-            "wallet_name": "wallet_1"
+            "wallet_name": "wallet_1",
+            "memo": "Thanks for the beer"
         }
     ),
     req_wallet: WalletConfig = Depends(get_wallet),
