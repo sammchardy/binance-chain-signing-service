@@ -1,7 +1,14 @@
 Changelog
 =========
 
-v0.0.2 - 2010-04-16
+v0.0.4 - 2019-04-16
+^^^^^^^^^^^^^^^^^^^
+
+**Added**
+
+- memo field to transfer endpoint
+
+v0.0.2 - 2019-04-16
 ^^^^^^^^^^^^^^^^^^^
 
 **Added**
@@ -9,8 +16,7 @@ v0.0.2 - 2010-04-16
 - Sample server at `binance-signing-service.xyz <https://binance-signing-service.xyz/docs>`_
 - Terraform example running on AWS Fargate behind ALB
 
-
-v0.0.1 - 2010-04-14
+v0.0.1 - 2019-04-14
 ^^^^^^^^^^^^^^^^^^^
 
 **Added**

@@ -1,5 +1,5 @@
 ===============================================
-Welcome to Binance Chain Signing Service v0.0.3
+Welcome to Binance Chain Signing Service v0.0.4
 ===============================================
 
 Features
