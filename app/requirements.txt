@@ -3,4 +3,4 @@ Click==7.0.0
 bcrypt
 pyjwt
 passlib
-pydantic==0.23
+pydantic==1.6.2
